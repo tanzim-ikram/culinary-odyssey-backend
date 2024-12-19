@@ -4,6 +4,8 @@ import {
   Column,
   OneToOne,
   JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Profile } from '../../profile/entities/profile.entity';
 
@@ -24,4 +26,18 @@ export class User {
   @OneToOne(() => Profile, (profile) => profile.user, { cascade: true })
   @JoinColumn()
   profile: Profile;
+
+  // Track user's last login
+  @Column({ nullable: true })
+  lastLogin: Date;
+
+  // Track user's last logout
+  @Column({ nullable: true })
+  lastLogout: Date;
+
+  @CreateDateColumn()
+  createdAt: Date; // Automatically set on insert
+
+  @UpdateDateColumn()
+  updatedAt: Date; // Automatically updated on save
 }

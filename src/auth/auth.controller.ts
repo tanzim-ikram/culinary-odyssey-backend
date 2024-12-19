@@ -1,37 +1,35 @@
 import {
   Body,
   Controller,
-  HttpCode,
   HttpStatus,
   Post,
   Req,
   Res,
-  UsePipes,
-  ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/auth.dto';
-import { SignInDto } from '../auth/dto/signin.dto';
+import { SignInDto } from './dto/signin.dto';
 import { Request, Response } from 'express';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
-// auth controller
 @Controller()
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
-  // sign up controller
+  // Sign-Up Controller
   @Post('signup')
   async signUp(@Body() authDto: AuthDto) {
-    // Signup logic does not need token validation
     return this.authService.signUp(authDto);
   }
 
-  // sign in controller
+  // Sign-In Controller
   @Post('signin')
-  async signIn(@Body() signInDto: SignInDto, @Res() res: Response) {  // Add @Res()
-    return this.authService.signIn(signInDto, res);  // Pass res here
+  async signIn(@Body() signInDto: SignInDto, @Res() res: Response) {
+    return this.authService.signIn(signInDto, res);
   }
 
+  // Logout Controller
   @Post('logout')
   async signOut(@Req() req: Request, @Res() res: Response): Promise<any> {
     // Optional: Perform server-side logic like deleting session, etc.
