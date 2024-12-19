@@ -1,13 +1,21 @@
-import { IsOptional, IsString, IsDateString, IsPhoneNumber } from 'class-validator';
+import { IsEmail, IsOptional, IsString, IsDateString } from 'class-validator';
 
-export class UpdateProfileDto {
+export class SignupDto {
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  password: string;
+
   @IsOptional()
   @IsString()
-  firstName?: string;
+  role?: string;
 
-  @IsOptional()
   @IsString()
-  lastName?: string;
+  firstName: string;
+
+  @IsString()
+  lastName: string;
 
   @IsOptional()
   @IsString()
@@ -15,14 +23,14 @@ export class UpdateProfileDto {
 
   @IsOptional()
   @IsDateString()
-  dob?: string;
+  dob?: Date;
 
   @IsOptional()
   @IsString()
   educationalLevel?: string;
 
   @IsOptional()
-  @IsPhoneNumber()
+  @IsString()
   phoneNumber?: string;
 
   @IsOptional()
@@ -31,5 +39,5 @@ export class UpdateProfileDto {
 
   @IsOptional()
   @IsString()
-  city?: string;
+  address?: string;
 }

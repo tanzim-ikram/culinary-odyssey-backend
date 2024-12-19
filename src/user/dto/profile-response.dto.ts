@@ -5,6 +5,7 @@ export class ProfileResponseDto {
     lastName: string;
     gender: string;
     dob: string; // Date in 'YYYY-MM-DD' format
+    role: string;
     educationalLevel: string;
     phoneNumber: string;
     country: string;

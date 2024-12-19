@@ -1,6 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
+import { Profile } from '../../profile/entities/profile.entity';
 
-@Entity('users')
+@Entity('users') // Table name
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -11,30 +18,10 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ default: 'DeliveryMan' }) // Default role is DeliveryMan
+  @Column({ default: 'DeliveryMan' }) // Default role
   role: string;
 
-  @Column()
-  firstName: string;
-
-  @Column()
-  lastName: string;
-
-  @Column()
-  gender: string;
-
-  @Column()
-  dob: Date;
-
-  @Column()
-  educationalLevel: string;
-
-  @Column()
-  phoneNumber: string;
-
-  @Column()
-  country: string;
-
-  @Column()
-  city: string;
+  @OneToOne(() => Profile, (profile) => profile.user, { cascade: true })
+  @JoinColumn()
+  profile: Profile;
 }

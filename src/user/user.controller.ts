@@ -1,16 +1,9 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '../auth/guards/auth.guard';
+import { Controller, Post, Body } from '@nestjs/common';
+import { UserService } from './user.service';
+import { SignupDto } from '../auth/dto/signup.dto';
 
-@Controller('profile')
-export class ProfileController {
-  @UseGuards(AuthGuard)  // Protect this route with AuthGuard
-  @Get()
-  getUserProfile(@Req() req) {
-    return req.user;  // The authenticated user info will be available here
-  }
-}
-
-@Controller('user')
+@Controller()
 export class UserController {
-  // Controller logic here
+  constructor(private readonly userService: UserService) {}
+
 }
