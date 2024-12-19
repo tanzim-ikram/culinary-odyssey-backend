@@ -8,14 +8,13 @@ import { User } from '../user/entities/user.entity';
 import { UserController } from '../user/user.controller';
 import { UserService } from 'src/user/user.service';
 import { AuthController } from './auth.controller';
-import { Profile } from 'src/profile/entities/profile.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Profile]),
+    TypeOrmModule.forFeature([User]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: 'abcd1234', // Use environment variables
+      secret: 'abc', // Use environment variables
       signOptions: { expiresIn: '1h' }, // Token expires in 1 hour
     }),
   ],

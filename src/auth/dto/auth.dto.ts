@@ -1,39 +1,45 @@
-import { IsEmail, IsString, IsOptional, IsDateString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, IsDateString, Matches } from 'class-validator';
 
 export class AuthDto {
-  @IsEmail()
-  email: string;
-
-  @IsString()
-  password: string;
-
-  @IsString()
+  @IsNotEmpty({ message: 'First name is required' })
+  @IsString({ message: 'First name must be a string' })
   firstName: string;
 
-  @IsString()
+  @IsNotEmpty({ message: 'Last name is required' })
+  @IsString({ message: 'Last name must be a string' })
   lastName: string;
 
-  @IsOptional()
-  @IsString()
-  gender?: string;
+  @IsNotEmpty({ message: 'Gender is required' })
+  @IsString({ message: 'Gender must be a string' })
+  gender: string;
 
-  @IsOptional()
+  @IsNotEmpty({ message: 'Date of Birth is required' })
   @IsDateString()
-  dob?: string;
+  dob: string;
 
-  @IsOptional()
-  @IsString()
-  educationalLevel?: string;
+  @IsNotEmpty({ message: 'Educational level is required' })
+  @IsString({ message: 'Educational level must be a string' })
+  educationalLevel: string;
 
-  @IsOptional()
-  @IsString()
-  phoneNumber?: string;
+  @IsNotEmpty({ message: 'Phone number is required' })
+  @Matches(/^\d+$/, { message: 'Phone number must contain digits only' })
+  phoneNumber: string;
 
-  @IsOptional()
-  @IsString()
-  country?: string;
+  @IsNotEmpty({ message: 'Country is required' })
+  @IsString({ message: 'Country must be a string' })
+  country: string;
 
-  @IsOptional()
-  @IsString()
-  city?: string;
+  @IsNotEmpty({ message: 'City is required' })
+  @IsString({ message: 'City must be a string' })
+  city: string;
+
+  @IsNotEmpty({ message: 'Email is required' })
+  @IsEmail({}, { message: 'Email must be valid' })
+  email: string;
+
+  @IsNotEmpty({ message: 'Password is required' })
+  @Matches(/(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}/, {
+    message: 'Password must contain letters, numbers, and special characters',
+  })
+  password: string;
 }

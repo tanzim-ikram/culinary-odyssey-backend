@@ -15,11 +15,11 @@ export class CreateUserDto {
 
   @IsDateString()
   @IsNotEmpty()
-  dob: string;
+  dob: string; // Should be a valid date in ISO 8601 format
 
   @IsString()
   @IsOptional()
-  educationalLevel?: string; // Optional field
+  education?: string; // Optional, as it might not always be provided
 
   @IsEmail()
   @IsNotEmpty()
@@ -29,7 +29,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   password: string;
 
-  @IsPhoneNumber(null)
+  @IsPhoneNumber(null) // Automatically checks the phone number format based on the country code
   @IsNotEmpty()
   phoneNumber: string;
 

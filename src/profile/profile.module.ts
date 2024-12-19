@@ -1,15 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Profile } from './entities/profile.entity';
-import { ProfileService } from './profile.service';
-import { ProfileController } from './profile.controller';
-import { JwtModule } from '@nestjs/jwt';
-import { User } from 'src/user/entities/user.entity';
+import { User } from '../user/entities/user.entity';
+import { UserService } from '../user/user.service';
+import { ProfileController } from '../profile/profile.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Profile, User]),JwtModule], // Include Profile entity
-  providers: [ProfileService],
+  imports: [TypeOrmModule.forFeature([User])],
   controllers: [ProfileController],
-  exports: [TypeOrmModule], // Export TypeOrmModule to share ProfileRepository
+  providers: [UserService],
 })
-export class ProfileModule {}
+export class UserModule {}

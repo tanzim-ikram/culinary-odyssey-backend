@@ -4,7 +4,6 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -19,8 +18,7 @@ import { ProfileModule } from './profile/profile.module';
       synchronize: true
     }),
     AuthModule, 
-    UserModule,
-    ProfileModule
+    UserModule
   ],
   controllers: [AppController],
   providers: [AppService],
