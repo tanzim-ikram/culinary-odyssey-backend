@@ -6,8 +6,10 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { Profile } from '../../profile/entities/profile.entity';
+import { Order } from 'src/order/entities/order.entity';
 
 @Entity('users') // Table name
 export class User {
@@ -26,6 +28,12 @@ export class User {
   @OneToOne(() => Profile, (profile) => profile.user, { cascade: true })
   @JoinColumn()
   profile: Profile;
+
+  @OneToMany(() => Order, (order) => order.user)
+  orders: Order[];
+
+  // @OneToMany(() => Customer, (customer) => customer.user)
+  // customers: Customer[];
 
   // Track user's last login
   @Column({ nullable: true })
