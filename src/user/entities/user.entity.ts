@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Profile } from '../../profile/entities/profile.entity';
 import { Order } from 'src/order/entities/order.entity';
+import { ShoppingList } from 'src/shoppinglist/entities/shoppinglist.entity';
 
 @Entity('users') // Table name
 export class User {
@@ -32,8 +33,8 @@ export class User {
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
 
-  // @OneToMany(() => Customer, (customer) => customer.user)
-  // customers: Customer[];
+  @OneToMany(() => ShoppingList, (shoppingList) => shoppingList.user) // Add this relationship
+  shoppingLists: ShoppingList[];
 
   // Track user's last login
   @Column({ nullable: true })
