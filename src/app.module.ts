@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { ProfileModule } from './profile/profile.module';
 import { OrderModule } from './order/order.module';
 import { ShoppingListModule } from './shoppinglist/shoppinglist.module';
+import { StatsModule } from './stats/stats.module';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { ShoppingListModule } from './shoppinglist/shoppinglist.module';
     UserModule,
     ProfileModule,
     OrderModule,
-    ShoppingListModule
+    ShoppingListModule,
+    StatsModule
   ],
   controllers: [AppController],
   providers: [AppService],

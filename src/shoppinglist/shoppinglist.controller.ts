@@ -16,7 +16,19 @@ export class ShoppingListController {
   ) {
     const userId = request.user.id; // Extract the user ID from the logged-in user's session
     const shoppingList = await this.shoppingListService.create({ ...data, userId });
-    return shoppingList;
+    return {
+      id: shoppingList.id,
+      name: shoppingList.name,
+      quantity: shoppingList.quantity,
+      unit: shoppingList.unit || null,
+      price: shoppingList.price, // Ensure the price is a string with two decimal places
+      status: shoppingList.status,
+      user: {
+        id: shoppingList.user.id,
+        email: shoppingList.user.email,
+        role: shoppingList.user.role,
+      },
+    };
   }
 
   @Get()
@@ -27,7 +39,7 @@ export class ShoppingListController {
       name: item.name,
       quantity: item.quantity,
       unit: item.unit || null, // Handle the possibility of `null`
-      price: item.price.toFixed(2), // Ensure price is a string with two decimal places
+      price: item.price, // Ensure price is a string with two decimal places
       status: item.status,
     }));
   }
