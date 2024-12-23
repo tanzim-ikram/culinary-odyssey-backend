@@ -47,8 +47,11 @@ export class OrderService {
 
     async getCustomersByUserId(userId: number): Promise<Partial<Order[]>> {
         return this.orderRepository.find({
-            where: { user: { id: userId } }, // Fetch orders associated with the logged-in user
-            select: ['customerName', 'address', 'phoneNumber'], // Only fetch required fields
+            where: {
+                user: { id: userId }, // Ensure the user ID is correctly associated
+            },
+            relations: ['user'], // Include the user relation to verify ownership
+            select: ['customerName', 'address', 'phoneNumber'], // Limit returned fields to customer details
         });
     }
 }
