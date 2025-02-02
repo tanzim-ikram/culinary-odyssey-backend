@@ -8,6 +8,7 @@ import { ProfileModule } from './profile/profile.module';
 import { OrderModule } from './order/order.module';
 import { ShoppingListModule } from './shoppinglist/shoppinglist.module';
 import { StatsModule } from './stats/stats.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { StatsModule } from './stats/stats.module';
     ProfileModule,
     OrderModule,
     ShoppingListModule,
-    StatsModule
+    StatsModule,
+    DashboardModule
   ],
   controllers: [AppController],
   providers: [AppService],
