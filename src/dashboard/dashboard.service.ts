@@ -40,7 +40,7 @@ export class DashboardService {
         const topOrders = await this.orderRepository.createQueryBuilder('order')
             .select(['order.id', 'order.customerName', 'order.parcelId', 'order.address', 'order.deliveryStatus'])
             .orderBy('order.id', 'DESC')
-            .limit(10)
+            .limit(5)
             .getMany(); // ✅ Use getMany() to return full entity objects
 
         // ✅ Fetch Day-wise Order Counts
