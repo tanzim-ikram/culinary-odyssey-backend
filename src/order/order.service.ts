@@ -1,57 +1,58 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Order } from './entities/order.entity';
-import { User } from '../user/entities/user.entity'; // Assuming User entity is defined here
-import { CreateOrderDto } from './dto/create-order.dto'; // A DTO for creating an order
+import { Order, Status } from './entities/order.entity';
+import { User } from '../user/entities/user.entity';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @Injectable()
 export class OrderService {
-    constructor(
-        @InjectRepository(Order) private readonly orderRepository: Repository<Order>,
-        @InjectRepository(User) private readonly userRepository: Repository<User>, // For handling user validation
-    ) { }
+  constructor(
+    @InjectRepository(Order) private readonly orderRepository: Repository<Order>,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+  ) {}
 
-    async createOrder(createOrderDto: CreateOrderDto, userId: number): Promise<Order> {
-        const user = await this.userRepository.findOne({ where: { id: userId } });
-
-        if (!user) {
-            throw new UnauthorizedException('Invalid user');
-        }
-
-        const order = this.orderRepository.create({
-            ...createOrderDto,
-            user, // Properly associate the user
-        });
-
-        return this.orderRepository.save(order); // Save and return the created order
+  async createOrder(createOrderDto: CreateOrderDto, userId: number): Promise<Order> {
+    // Fetch logged-in user
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new UnauthorizedException('Invalid user');
     }
 
-    async getUserOrders(userId: number): Promise<any[]> {
-        const orders = await this.orderRepository.find({
-            where: { user: { id: userId } }, // Fetch only orders for the logged-in user
-            relations: ['user'], // Include the user relation
-        });
+    // Create new order linked to user
+    const newOrder = this.orderRepository.create({
+      ...createOrderDto,
+      orderCreated: new Date(), // Auto-set order creation date
+      user, // Auto-set user association
+    });
 
-        // Transform the orders to include userId directly instead of nesting the user object
-        return orders.map(order => ({
-            id: order.id,
-            customerName: order.customerName,
-            parcelId: order.parcelId,
-            address: order.address,
-            phoneNumber: order.phoneNumber,
-            deliveryStatus: order.deliveryStatus,
-            userId: order.user.id, // Extract the user's id
-        }));
-    }
+    return await this.orderRepository.save(newOrder);
+  }
 
-    async getCustomersByUserId(userId: number): Promise<Partial<Order[]>> {
-        return this.orderRepository.find({
-            where: {
-                user: { id: userId }, // Ensure the user ID is correctly associated
-            },
-            relations: ['user'], // Include the user relation to verify ownership
-            select: ['customerName', 'address', 'phoneNumber'], // Limit returned fields to customer details
-        });
+  async getUserOrders(userId: number): Promise<Order[]> {
+    return await this.orderRepository.find({
+      where: { user: { id: userId } },
+      relations: ['user'],
+    });
+  }
+
+  async getCustomersByUserId(userId: number): Promise<any[]> {
+    const orders = await this.orderRepository.find({
+      where: { user: { id: userId } }, // Fetch orders linked to the user
+      relations: ['user'],
+      select: ['customerName', 'address', 'phoneNumber', 'orderCreated'], // Return only customer details
+    });
+  
+    if (!orders.length) {
+      throw new NotFoundException('No customers found for this user');
     }
+  
+    return orders.map(order => ({
+      customerName: order.customerName,
+      address: order.address,
+      phoneNumber: order.phoneNumber,
+      orderCreated: order.orderCreated,
+    }));
+  }
+  
 }

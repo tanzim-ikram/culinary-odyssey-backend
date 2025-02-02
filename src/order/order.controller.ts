@@ -5,6 +5,7 @@ import {
     Get,
     UseGuards,
     Request,
+    Req,
   } from '@nestjs/common';
   import { OrderService } from './order.service';
   import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'; // Ensure authentication
@@ -16,8 +17,9 @@ import {
   
     @UseGuards(JwtAuthGuard)
     @Post('orders')
-    async createOrder(@Body() createOrderDto: CreateOrderDto, @Request() req) {
-      return this.orderService.createOrder(createOrderDto, req.user.userId); // Ensure only logged-in user can create an order
+    async createOrder(@Body() createOrderDto: CreateOrderDto, @Req() req) {
+      const userId = req.user.userId; // Extract `userId` from request (set by JWT Guard)
+      return this.orderService.createOrder(createOrderDto, userId); // Pass extracted userId
     }
   
     @UseGuards(JwtAuthGuard)

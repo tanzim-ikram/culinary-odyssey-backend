@@ -1,16 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { User } from '../../user/entities/user.entity'; // Assuming User entity exists
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 export enum Status {
-    PENDING = 'PENDING',
-    DELIVERED = 'DELIVERED',
-    IN_PROCESS = 'IN PROCESS',
-    FAILED = 'FAILED'
-  }
+  PENDING = 'PENDING',
+  DELIVERED = 'DELIVERED',
+  IN_PROCESS = 'IN PROCESS',
+  FAILED = 'FAILED'
+}
 
 @Entity('orders')
 export class Order {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn() // Auto-increment ID
   id: number;
 
   @Column()
@@ -25,9 +25,13 @@ export class Order {
   @Column()
   phoneNumber: string;
 
-  @Column({ type: 'enum', enum: Status })
+  @Column({ type: 'enum', enum: Status, default: Status.PENDING })
   deliveryStatus: Status;
 
-  @ManyToOne(() => User, (user) => user.orders)
-  user: User; // Associate with the User entity
+  @CreateDateColumn({ type: 'timestamp' }) // Auto-set creation date
+  orderCreated: Date;
+
+  @ManyToOne(() => User, (user) => user.orders, { eager: true, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'userId' }) // Auto-associate the logged-in user
+  user: User;
 }

@@ -1,23 +1,23 @@
-import { IsString, IsEnum, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString, IsPhoneNumber, IsInt, Matches } from 'class-validator';
 import { Status } from '../entities/order.entity';
 
 export class CreateOrderDto {
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   customerName: string;
 
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   parcelId: string;
 
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   address: string;
 
-  @IsString()
   @IsNotEmpty()
+  @Matches(/^\+?[1-9]\d{1,14}$/, { message: 'Phone number must be in international format (+1234567890) or valid local format' })
   phoneNumber: string;
-
+  
   @IsEnum(Status)
-  deliveryStatus: Status; // Defaults to Pending or can be set explicitly
+  deliveryStatus: Status;
 }
