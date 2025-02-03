@@ -21,7 +21,7 @@ export class ShoppingListController {
       name: shoppingList.name,
       quantity: shoppingList.quantity,
       unit: shoppingList.unit || null,
-      price: shoppingList.price, // Ensure the price is a string with two decimal places
+      // price: shoppingList.price, // Ensure the price is a string with two decimal places
       status: shoppingList.status,
       user: {
         id: shoppingList.user.id,
@@ -39,7 +39,7 @@ export class ShoppingListController {
       name: item.name,
       quantity: item.quantity,
       unit: item.unit || null, // Handle the possibility of `null`
-      price: item.price, // Ensure price is a string with two decimal places
+      // price: item.price, // Ensure price is a string with two decimal places
       status: item.status,
     }));
   }

@@ -8,7 +8,6 @@ export interface ShoppingListInterface {
   name: string;
   quantity: number;
   unit?: string;
-  price: number;
   status?: shoppingStatus;
   userId: number;
 }
