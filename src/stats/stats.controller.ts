@@ -14,10 +14,9 @@ export class StatsController {
       totalParcels: stats.totalParcels,
       successfulDeliveries: stats.successfulDeliveries,
       failedDeliveries: stats.failedDeliveries,
-      customersByLocation: stats.customersByLocation.map((entry) => ({
-        location: entry.location,
-        count: parseInt(entry.count, 10),
-      })),
+      customersByLocation: stats.customersByLocation,
+      successfulVsFailedByMonth: stats.successfulVsFailedByMonth,
+      dayWiseOrders: stats.dayWiseOrders
     };
   }
 }
