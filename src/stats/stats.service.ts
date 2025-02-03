@@ -10,7 +10,7 @@ export class StatsService {
         private readonly orderRepository: Repository<Order>,
     ) { }
 
-    async getStatistics() {
+    async getStatistics(userId: number) {
         // ✅ Get the start of the current week
         const today = new Date();
         const startOfWeek = new Date(today);
@@ -21,61 +21,73 @@ export class StatsService {
         const startOfNextWeek = new Date(startOfWeek);
         startOfNextWeek.setDate(startOfNextWeek.getDate() + 7); // Move to next Sunday
 
-        // ✅ Count total parcels (ONLY this week's orders)
+        // ✅ Count total parcels (ONLY this user's orders for this week)
         const totalParcels = await this.orderRepository.count({
             where: {
+                user: { id: userId }, // ✅ Corrected user reference
                 orderCreated: Between(startOfWeek, startOfNextWeek),
             },
         });
 
-        // ✅ Count successful deliveries (ONLY this week's orders)
+        // ✅ Count successful deliveries (ONLY this user's orders)
         const successfulDeliveries = await this.orderRepository.count({
             where: {
+                user: { id: userId },  // ✅ Corrected user reference
                 deliveryStatus: Status.DELIVERED,
                 orderCreated: Between(startOfWeek, startOfNextWeek),
             },
         });
 
-        // ✅ Count failed deliveries (ONLY this week's orders)
+        // ✅ Count failed deliveries (ONLY this user's orders)
         const failedDeliveries = await this.orderRepository.count({
             where: {
+                user: { id: userId },  // ✅ Corrected user reference
                 deliveryStatus: Status.FAILED,
                 orderCreated: Between(startOfWeek, startOfNextWeek),
             },
         });
 
-        // ✅ Customers by Location (Current Week Only)
+        // ✅ Customers by Location (Current Week Only, Filter by userId)
         const customersByLocation = await this.orderRepository
             .createQueryBuilder('o')
             .select("SPLIT_PART(o.address, ',', 2)", 'location') // Extract main area
             .addSelect('COUNT(o.id)', 'count')
-            .where("o.orderCreated BETWEEN :start AND :end", { start: startOfWeek, end: startOfNextWeek })
+            .where("o.userId = :userId AND o.orderCreated BETWEEN :start AND :end", { 
+                userId, 
+                start: startOfWeek, 
+                end: startOfNextWeek 
+            })
             .groupBy("SPLIT_PART(o.address, ',', 2)")
             .getRawMany();
 
-        // ✅ Successful vs Failed Deliveries by **ALL** Months, Sorted Chronologically
+        // ✅ Successful vs Failed Deliveries by **ALL** Months (Filtered by userId)
         const deliveryByMonth = await this.orderRepository
             .createQueryBuilder('o')
             .select([
-                "TO_CHAR(o.orderCreated, 'YYYY') AS year",  // Extract year
-                "TO_CHAR(o.orderCreated, 'Month') AS month", // Extract full month name
-                "TO_CHAR(o.orderCreated, 'MM') AS month_number", // Extract numeric month (for sorting)
+                "TO_CHAR(o.orderCreated, 'YYYY') AS year",
+                "TO_CHAR(o.orderCreated, 'Month') AS month",
+                "TO_CHAR(o.orderCreated, 'MM') AS month_number",
                 "SUM(CASE WHEN o.deliveryStatus = 'DELIVERED' THEN 1 ELSE 0 END) AS successful",
                 "SUM(CASE WHEN o.deliveryStatus = 'FAILED' THEN 1 ELSE 0 END) AS failed"
             ])
+            .where("o.user.id = :userId", { userId }) // ✅ Corrected user reference
             .groupBy("TO_CHAR(o.orderCreated, 'YYYY'), TO_CHAR(o.orderCreated, 'Month'), TO_CHAR(o.orderCreated, 'MM')")
-            .orderBy("TO_CHAR(o.orderCreated, 'YYYY')", "ASC") // ✅ First, sort by year (oldest first)
-            .addOrderBy("TO_CHAR(o.orderCreated, 'MM')", "ASC") // ✅ Then, sort by month within each year
+            .orderBy("TO_CHAR(o.orderCreated, 'YYYY')", "ASC") 
+            .addOrderBy("TO_CHAR(o.orderCreated, 'MM')", "ASC")
             .getRawMany();
 
-        // ✅ Orders per Day (Current Week Only)
+        // ✅ Orders per Day (Current Week Only, Filtered by userId)
         const ordersByDay = await this.orderRepository
             .createQueryBuilder('o')
             .select([
                 "TO_CHAR(o.orderCreated, 'Day') as day",
                 "COUNT(o.id) as count"
             ])
-            .where("o.orderCreated BETWEEN :start AND :end", { start: startOfWeek, end: startOfNextWeek })
+            .where("o.user.id = :userId AND o.orderCreated BETWEEN :start AND :end", { 
+                userId, 
+                start: startOfWeek, 
+                end: startOfNextWeek 
+            })
             .groupBy("TO_CHAR(o.orderCreated, 'Day')")
             .orderBy("TO_CHAR(o.orderCreated, 'Day')", "ASC")
             .getRawMany();
@@ -85,7 +97,7 @@ export class StatsService {
         const dayWiseOrders = days.reduce((acc, day) => ({ ...acc, [day]: 0 }), {});
 
         ordersByDay.forEach(order => {
-            const formattedDay = order.day.trim(); // Trim whitespace
+            const formattedDay = order.day.trim();
             if (formattedDay in dayWiseOrders) {
                 dayWiseOrders[formattedDay] = parseInt(order.count, 10);
             }
