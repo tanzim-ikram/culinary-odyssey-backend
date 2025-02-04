@@ -28,7 +28,8 @@ export class DashboardService {
         // ✅ Fetch only orders belonging to this user
         const totalDeliveries = await this.orderRepository.createQueryBuilder('order')
             .select('COUNT(order.id)', 'count')
-            .where('order.userId = :userId', { userId }) // Filter by userId
+            .where('order.deliveryStatus = :status AND order.userId = :userId', { status: Status.DELIVERED, userId })
+            // .where('order.userId = :userId', { userId }) // Filter by userId
             .getRawOne();
 
         const pendingDeliveries = await this.orderRepository.createQueryBuilder('order')
